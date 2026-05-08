@@ -7,66 +7,157 @@
 
 <style>
 body {
-    margin: 0;
-    font-family: Arial;
-    background: linear-gradient(135deg, #141e30, #243b55);
-    color: white;
-    text-align: center;
+  font-family: Georgia, 'Times New Roman', serif;
+  background: linear-gradient(to bottom, #c9d1cb, #3b3d3c);
+  margin: 0;
+  padding: 0;
+  color: #2c3e50;
+  text-align: center;
+}
+
+h1 {
+  background: #2f4f4f;
+  color: white;
+  padding: 2rem 0;
+  margin: 0;
+  border-bottom: 5px solid #a3b9a5;
+  font-size: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
 }
 
 #box {
-    background: rgba(255,255,255,0.08);
-    width: 95%;
-    max-width: 650px;
-    margin: 15px auto;
-    padding: 20px;
-    border-radius: 18px;
+  max-width: 850px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: 15px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
 }
 
 input {
-    padding: 14px;
-    width: 90%;
-    font-size: 16px;
-    border-radius: 10px;
-    border: none;
-    text-align: center;
-    margin: 10px 0;
+  width: 90%;
+  padding: 12px;
+  font-size: 16px;
+  border: 2px solid #a3b9a5;
+  border-radius: 8px;
+  margin: 8px 0;
+  text-align: center;
+  font-family: Georgia, serif;
 }
 
 button {
-    padding: 14px;
-    width: 95%;
-    margin: 10px 0;
-    border-radius: 12px;
-    border: none;
-    cursor: pointer;
-    font-size: 18px;
+  width: 85%;
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: Georgia, serif;
+  transition: 0.3s ease;
 }
 
 .primary {
-    background: #00ffcc;
-    font-weight: bold;
-    color: black;
+  background: #2f4f4f;
+  color: white;
+  font-weight: bold;
+  border: 2px solid #a3b9a5;
+}
+
+.primary:hover {
+  background: #a3b9a5;
+  color: #2c3e50;
 }
 
 .option {
-    background: white;
-    color: black;
+  background: #f0f5f0;
+  color: #2c3e50;
+  border-left: 6px solid #a3b9a5;
+  font-weight: bold;
 }
 
-/* FULLSCREEN LEADERBOARD */
-#fullscreenBoard {
-    display: none;
-    position: fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:black;
-    color:#00ffcc;
-    padding:20px;
-    font-size:24px;
-    overflow-y:auto;
+.option:hover {
+  background: #a3b9a5;
+  color: white;
+}
+
+h3 {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #2c3e50;
+  border-left: 6px solid #a3b9a5;
+  padding-left: 10px;
+  text-align: left;
+  max-width: 700px;
+  margin: 20px auto;
+}
+
+/* ADMIN PANEL */
+#adminPanel {
+  display: none;
+  position: fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background: #2f4f4f;
+  color: white;
+  padding: 20px;
+  overflow-y: auto;
+  z-index: 999;
+}
+
+/* 🏆 UPDATED TITLE */
+#adminPanel h1 {
+  color: #f1c40f;
+}
+
+#adminPanel h2 {
+  color: white;
+}
+
+#adminPanel p {
+  background: #f0f5f0;
+  color: #2c3e50;
+  padding: 10px;
+  margin: 8px 0;
+  border-radius: 10px;
+}
+
+/* ADMIN BUTTONS */
+.admin-btn {
+  display: block;
+  width: 160px;
+  padding: 8px;
+  font-size: 13px;
+  margin: 8px auto;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+}
+
+.reset-btn {
+  background: #b91c1c;
+  color: white;
+}
+
+.reset-btn:hover {
+  background: #ef4444;
+}
+
+.close-btn {
+  background: #111827;
+  color: white;
+}
+
+.close-btn:hover {
+  background: #374151;
+}
+
+@media (max-width: 600px) {
+  h1 { font-size: 18px; }
+  button { font-size: 14px; width: 92%; }
+  h3 { font-size: 16px; }
 }
 </style>
 </head>
@@ -77,62 +168,61 @@ button {
 
 <div id="box">
 
-    <!-- START -->
     <div id="startScreen">
-        <p>Tik jou naam om te begin:</p>
+        <p>Tik jou inligting om te begin:</p>
+
         <input id="name" placeholder="Jou naam...">
+        <input id="school" placeholder="Skool naam...">
 
         <button class="primary" onclick="startGame()">Begin Quiz</button>
-        <button class="primary" onclick="toggleBoard()">🏆 Wys Leaderboard</button>
     </div>
 
-    <!-- QUIZ -->
     <h3 id="question"></h3>
     <div id="answers"></div>
 
 </div>
 
-<!-- FULLSCREEN LEADERBOARD -->
-<div id="fullscreenBoard"></div>
+<div id="adminPanel"></div>
 
 <script>
 
 /* ---------------- QUESTIONS ---------------- */
 const questions = [
     { q:"1.1 Invoertoestel?", a:["Printer","Monitor","Keyboard","Speaker"], correct:2 },
-    { q:"1.2 OS doen wat?", a:["Speletjies","Bestuur rekenaar","Fotos","Email"], correct:1 },
+    { q:"1.2 OS funksie?", a:["Speletjies","Bestuur rekenaar","Fotos","Email"], correct:1 },
     { q:"1.3 Spesialis sagteware?", a:["Windows","Excel","Linux","Mac"], correct:1 },
     { q:"2.1 Beeldlêer?", a:[".docx",".jpg",".mp3",".exe"], correct:1 },
-    { q:"2.2 Argiveer beteken?", a:["Delete","Stoor","Druk","Email"], correct:1 }
+    { q:"2.2 Argiveer?", a:["Delete","Stoor","Druk","Email"], correct:1 }
 ];
 
 let current = 0;
 let score = 0;
 let player = "";
+let school = "";
+let isAdmin = false;
 
 let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
-let adminMode = false;
 
-/* ---------------- START GAME ---------------- */
+function isAdminUser(name) {
+    return name.trim().toLowerCase() === "admin2026";
+}
+
 function startGame() {
     player = document.getElementById("name").value.trim();
 
-    if (!player) {
-        alert("Tik jou naam!");
+    if (isAdminUser(player)) {
+        isAdmin = true;
+        openAdminPanel();
         return;
     }
 
-    /* 🔐 ADMIN MODE CHECK */
-    if (player === "admin2026") {
-        adminMode = true;
-        alert("Admin Mode Activated ✔");
-    }
+    school = document.getElementById("school").value.trim();
+    if (!player || !school) return alert("Vul naam EN skool in!");
 
     document.getElementById("startScreen").style.display = "none";
     showQ();
 }
 
-/* ---------------- QUIZ ---------------- */
 function showQ() {
     if (current >= questions.length) return endGame();
 
@@ -157,66 +247,68 @@ function showQ() {
     });
 }
 
-/* ---------------- END GAME ---------------- */
 function endGame() {
-    saveScore(player, score);
+
+    if (!isAdmin) {
+        leaderboard.push({name: player, school, score});
+        localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+    }
 
     document.getElementById("question").innerHTML =
-        `🎉 Klaar ${player}! Jy het ${score}/${questions.length}`;
+        `🎉 Klaar ${player} (${school})! Jy het ${score}/${questions.length}`;
 
     document.getElementById("answers").innerHTML =
         `<button class="primary" onclick="location.reload()">Speel weer</button>`;
+
+    if (isAdmin) openAdminPanel();
 }
 
-/* ---------------- SAVE ---------------- */
-function saveScore(name, score) {
-    leaderboard.push({name, score});
-    leaderboard.sort((a,b)=>b.score-a.score);
-    leaderboard = leaderboard.slice(0,10);
-    localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
-}
-
-/* ---------------- LEADERBOARD ---------------- */
-function toggleBoard() {
-    let board = document.getElementById("fullscreenBoard");
-
+/* ---------------- ADMIN PANEL ---------------- */
+function openAdminPanel() {
+    let panel = document.getElementById("adminPanel");
     let data = JSON.parse(localStorage.getItem("leaderboard")) || [];
 
-    board.innerHTML = `
-        <h1>🏆 LEADERBOARD</h1>
+    let top3 = data.slice(0,3);
+    let rest = data.slice(3);
 
-        ${data.map((p,i)=>
-            `<p>#${i+1} ${p.name} - ${p.score}/${questions.length}</p>`
+    panel.innerHTML = `
+        <h1>🏆 Leierbord</h1>
+        <h2>RTT Quiz Resultate</h2>
+
+        <div style="display:flex;justify-content:center;gap:15px;flex-wrap:wrap;margin-bottom:20px;">
+            ${top3.map((p,i)=>`
+                <div style="background:#f0f5f0;color:#2c3e50;padding:15px;border-radius:12px;width:140px;">
+                    <h3>${i===0?"🥇":i===1?"🥈":"🥉"}</h3>
+                    <p><b>${p.name}</b></p>
+                    <p>${p.school}</p>
+                    <p>${p.score}/${questions.length}</p>
+                </div>
+            `).join("")}
+        </div>
+
+        ${rest.map((p,i)=>
+            `<p>#${i+4} ${p.name} (${p.school}) - ${p.score}/${questions.length}</p>`
         ).join("")}
 
-        <br>
-
-        ${adminMode ? `
-        <button onclick="resetLeaderboard()" class="primary">
-        🗑 Reset Leaderboard
-        </button>
-        ` : ""}
-
-        <button onclick="toggleBoard()" class="primary">
-        Sluit
-        </button>
+        <button class="admin-btn reset-btn" onclick="resetLeaderboard()">🗑 Reset</button>
+        <button class="admin-btn close-btn" onclick="closeAdmin()">🚪 Sluit Panel</button>
     `;
 
-    board.style.display = board.style.display === "block" ? "none" : "block";
+    panel.style.display = "block";
 }
 
-/* ---------------- RESET (ADMIN ONLY) ---------------- */
 function resetLeaderboard() {
-    let pass = prompt("Admin password:");
-
+    let pass = prompt("Confirm password:");
     if (pass === "RTT2026") {
         localStorage.removeItem("leaderboard");
-        alert("Leaderboard skoongemaak ✔");
-        toggleBoard();
-        toggleBoard();
+        openAdminPanel();
     } else {
         alert("Wrong password ❌");
     }
+}
+
+function closeAdmin() {
+    document.getElementById("adminPanel").style.display = "none";
 }
 
 </script>
