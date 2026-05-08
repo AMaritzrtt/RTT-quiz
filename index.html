@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="af">
+<head>
+<meta charset="UTF-8">
+<title>RTT Quiz Show</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial;
+    background: linear-gradient(135deg, #141e30, #243b55);
+    color: white;
+    text-align: center;
+}
+
+#box {
+    background: rgba(255,255,255,0.08);
+    width: 92%;
+    max-width: 650px;
+    margin: 30px auto;
+    padding: 25px;
+    border-radius: 18px;
+    box-shadow: 0 0 25px rgba(0,255,204,0.2);
+}
+
+input {
+    padding: 12px;
+    width: 80%;
+    border-radius: 10px;
+    border: none;
+    text-align: center;
+    margin: 10px;
+}
+
+button {
+    padding: 12px;
+    width: 85%;
+    margin: 8px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.2s;
+}
+
+button:hover {
+    transform: scale(1.03);
+}
+
+.primary {
+    background: #00ffcc;
+    font-weight: bold;
+    color: black;
+}
+
+.option {
+    background: white;
+    color: black;
+}
+
+.option:hover {
+    background: #00ffcc;
+}
+
+/* FULLSCREEN LEADERBOARD */
+#fullscreenBoard {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: black;
+    color: #00ffcc;
+    padding-top: 50px;
+    font-size: 30px;
+    z-index: 999;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🎓 RTT QUIZ SHOW</h1>
+
+<div id="box">
+
+    <!-- START -->
+    <div id="startScreen">
+        <p>Tik jou naam om te begin:</p>
+        <input id="name" placeholder="Jou naam...">
+
+        <button class="primary" onclick="startGame()">Begin Quiz</button>
+
+        <button onclick="toggleBoard()" class="primary">
+        🏆 Wys Leaderboard
+        </button>
+    </div>
+
+    <!-- QUIZ -->
+    <h3 id="question"></h3>
+    <div id="answers"></div>
+
+</div>
+
+<!-- FULLSCREEN LEADERBOARD -->
+<div id="fullscreenBoard"></div>
+
+<script>
+
+/* ---------------- QUESTIONS ---------------- */
+const questions = [
+    {
+        q: "1.1 Watter van die volgende is 'n invoertoestel?",
+        a: ["Printer", "Monitor", "Keyboard", "Speaker"],
+        correct: 2
+    },
+    {
+        q: "1.2 Wat is die hoofdoel van 'n bedryfstelsel?",
+        a: [
+            "Maak presentasies",
+            "Bestuur rekenaar",
+            "Blaai internet",
+            "Edit foto's"
+        ],
+        correct: 1
+    },
+    {
+        q: "1.3 Watter is spesialis sagteware?",
+        a: ["Windows", "Excel", "Linux", "MacOS"],
+        correct: 1
+    },
+    {
+        q: "1.4 Wat beteken RFID?",
+        a: [
+            "Radio Frequency Information Device",
+            "Radio Frequency Identification",
+            "Random Frequency Input Device",
+            "Real File Identification"
+        ],
+        correct: 1
+    },
+    {
+        q: "2.1 Watter is 'n beeldlêer?",
+        a: [".docx", ".jpg", ".mp3", ".exe"],
+        correct: 1
+    },
+    {
+        q: "2.2 Hoekom argiveer ons lêers?",
+        a: [
+            "Delete permanent",
+            "Stoor vir later",
+            "Maak vinniger",
+            "Stuur email"
+        ],
+        correct: 1
+    }
+];
+
+let current = 0;
+let score = 0;
+let player = "";
+
+let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
+
+/* ---------------- START ---------------- */
+function startGame() {
+    player = document.getElementById("name").value.trim();
+    if (!player) return alert("Tik jou naam!");
+
+    document.getElementById("startScreen").style.display = "none";
+    showQ();
+}
+
+/* ---------------- QUESTIONS ---------------- */
+function showQ() {
+    if (current >= questions.length) return endGame();
+
+    let q = questions[current];
+    document.getElementById("question").innerText = q.q;
+
+    let div = document.getElementById("answers");
+    div.innerHTML = "";
+
+    q.a.forEach((ans,i)=>{
+        let b = document.createElement("button");
+        b.className = "option";
+        b.innerText = ans;
+
+        b.onclick = ()=>{
+            if(i === q.correct) score++;
+            current++;
+            showQ();
+        };
+
+        div.appendChild(b);
+    });
+}
+
+/* ---------------- END GAME ---------------- */
+function endGame() {
+    saveScore(player, score);
+
+    document.getElementById("question").innerHTML =
+        `🎉 Klaar ${player}! Jy het ${score}/${questions.length}`;
+
+    document.getElementById("answers").innerHTML =
+        `<button class="primary" onclick="location.reload()">Speel weer</button>`;
+}
+
+/* ---------------- SAVE ---------------- */
+function saveScore(name, score) {
+    leaderboard.push({name, score});
+    leaderboard.sort((a,b)=>b.score-a.score);
+    leaderboard = leaderboard.slice(0,10);
+    localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+}
+
+/* ---------------- FULLSCREEN LEADERBOARD ---------------- */
+function toggleBoard() {
+    let board = document.getElementById("fullscreenBoard");
+
+    if (board.style.display === "block") {
+        board.style.display = "none";
+        return;
+    }
+
+    let data = JSON.parse(localStorage.getItem("leaderboard")) || [];
+
+    board.innerHTML = `
+        <h1>🏆 LEADERBOARD</h1>
+
+        ${data.map((p,i)=>
+            `<p>#${i+1} ${p.name} - ${p.score}/${questions.length}</p>`
+        ).join("")}
+
+        <br>
+
+        <button onclick="resetLeaderboard()" style="
+            padding:12px;
+            width:220px;
+            margin:10px;
+            border:none;
+            border-radius:10px;
+            cursor:pointer;
+            background:red;
+            color:white;
+            font-size:16px;
+        ">
+        🗑 Reset Leaderboard
+        </button>
+
+        <br>
+
+        <button onclick="toggleBoard()" style="
+            padding:12px;
+            width:220px;
+            border:none;
+            border-radius:10px;
+            cursor:pointer;
+        ">
+        Sluit
+        </button>
+    `;
+
+    board.style.display = "block";
+}
+
+/* ---------------- RESET ---------------- */
+function resetLeaderboard() {
+    let confirmReset = confirm("Weet jy seker jy wil ALLE scores delete?");
+
+    if (confirmReset) {
+        localStorage.removeItem("leaderboard");
+        alert("Leaderboard is skoongemaak ✔");
+        toggleBoard();
+        toggleBoard();
+    }
+}
+
+</script>
+
+</body>
+</html>
