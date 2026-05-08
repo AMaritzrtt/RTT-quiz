@@ -2,6 +2,7 @@
 <html lang="af">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RTT Quiz Show</title>
 
 <style>
@@ -13,38 +14,36 @@ body {
     text-align: center;
 }
 
+/* MOBILE FRIENDLY CARD */
 #box {
     background: rgba(255,255,255,0.08);
-    width: 92%;
+    width: 95%;
     max-width: 650px;
-    margin: 30px auto;
-    padding: 25px;
+    margin: 15px auto;
+    padding: 20px;
     border-radius: 18px;
-    box-shadow: 0 0 25px rgba(0,255,204,0.2);
 }
 
+/* INPUT */
 input {
-    padding: 12px;
-    width: 80%;
+    padding: 14px;
+    width: 90%;
+    font-size: 16px;
     border-radius: 10px;
     border: none;
     text-align: center;
-    margin: 10px;
+    margin: 10px 0;
 }
 
+/* BUTTONS (BIG FOR PHONE) */
 button {
-    padding: 12px;
-    width: 85%;
-    margin: 8px;
+    padding: 14px;
+    width: 95%;
+    margin: 10px 0;
     border-radius: 12px;
     border: none;
     cursor: pointer;
-    font-size: 16px;
-    transition: 0.2s;
-}
-
-button:hover {
-    transform: scale(1.03);
+    font-size: 18px;
 }
 
 .primary {
@@ -62,7 +61,7 @@ button:hover {
     background: #00ffcc;
 }
 
-/* FULLSCREEN LEADERBOARD */
+/* FULLSCREEN BOARD */
 #fullscreenBoard {
     display: none;
     position: fixed;
@@ -72,10 +71,14 @@ button:hover {
     height: 100%;
     background: black;
     color: #00ffcc;
-    padding-top: 50px;
-    font-size: 30px;
-    z-index: 999;
+    padding: 20px;
+    font-size: 24px;
+    overflow-y: auto;
 }
+
+/* MOBILE TEXT SIZE */
+h1 { font-size: 24px; }
+h3 { font-size: 18px; }
 </style>
 </head>
 
@@ -91,10 +94,7 @@ button:hover {
         <input id="name" placeholder="Jou naam...">
 
         <button class="primary" onclick="startGame()">Begin Quiz</button>
-
-        <button onclick="toggleBoard()" class="primary">
-        🏆 Wys Leaderboard
-        </button>
+        <button class="primary" onclick="toggleBoard()">🏆 Wys Leaderboard</button>
     </div>
 
     <!-- QUIZ -->
@@ -110,51 +110,22 @@ button:hover {
 
 /* ---------------- QUESTIONS ---------------- */
 const questions = [
-    {
-        q: "1.1 Watter van die volgende is 'n invoertoestel?",
-        a: ["Printer", "Monitor", "Keyboard", "Speaker"],
-        correct: 2
-    },
-    {
-        q: "1.2 Wat is die hoofdoel van 'n bedryfstelsel?",
-        a: [
-            "Maak presentasies",
-            "Bestuur rekenaar",
-            "Blaai internet",
-            "Edit foto's"
-        ],
-        correct: 1
-    },
-    {
-        q: "1.3 Watter is spesialis sagteware?",
-        a: ["Windows", "Excel", "Linux", "MacOS"],
-        correct: 1
-    },
-    {
-        q: "1.4 Wat beteken RFID?",
-        a: [
-            "Radio Frequency Information Device",
-            "Radio Frequency Identification",
-            "Random Frequency Input Device",
-            "Real File Identification"
-        ],
-        correct: 1
-    },
-    {
-        q: "2.1 Watter is 'n beeldlêer?",
-        a: [".docx", ".jpg", ".mp3", ".exe"],
-        correct: 1
-    },
-    {
-        q: "2.2 Hoekom argiveer ons lêers?",
-        a: [
-            "Delete permanent",
-            "Stoor vir later",
-            "Maak vinniger",
-            "Stuur email"
-        ],
-        correct: 1
-    }
+    { q:"1.1 Invoertoestel?", a:["Printer","Monitor","Keyboard","Speaker"], correct:2 },
+    { q:"1.2 Doel van OS?", a:["Speletjies maak","Bestuur rekenaar","Internet","Fotos"], correct:1 },
+    { q:"1.3 Spesialis sagteware?", a:["Windows","Excel","Linux","Mac"], correct:1 },
+    { q:"1.4 RFID beteken?", a:[
+        "Radio Frequency Information Device",
+        "Radio Frequency Identification",
+        "Random Input Device",
+        "Real File ID"
+    ], correct:1 },
+    { q:"2.1 Beeldlêer?", a:[".docx",".jpg",".mp3",".exe"], correct:1 },
+    { q:"2.2 Argiveer beteken?", a:[
+        "Delete",
+        "Stoor vir later",
+        "Druk uit",
+        "Email"
+    ], correct:1 }
 ];
 
 let current = 0;
@@ -172,7 +143,7 @@ function startGame() {
     showQ();
 }
 
-/* ---------------- QUESTIONS ---------------- */
+/* ---------------- QUIZ ---------------- */
 function showQ() {
     if (current >= questions.length) return endGame();
 
@@ -197,7 +168,7 @@ function showQ() {
     });
 }
 
-/* ---------------- END GAME ---------------- */
+/* ---------------- END ---------------- */
 function endGame() {
     saveScore(player, score);
 
@@ -213,6 +184,7 @@ function saveScore(name, score) {
     leaderboard.push({name, score});
     leaderboard.sort((a,b)=>b.score-a.score);
     leaderboard = leaderboard.slice(0,10);
+
     localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
 }
 
@@ -236,29 +208,11 @@ function toggleBoard() {
 
         <br>
 
-        <button onclick="resetLeaderboard()" style="
-            padding:12px;
-            width:220px;
-            margin:10px;
-            border:none;
-            border-radius:10px;
-            cursor:pointer;
-            background:red;
-            color:white;
-            font-size:16px;
-        ">
+        <button onclick="resetLeaderboard()" class="primary">
         🗑 Reset Leaderboard
         </button>
 
-        <br>
-
-        <button onclick="toggleBoard()" style="
-            padding:12px;
-            width:220px;
-            border:none;
-            border-radius:10px;
-            cursor:pointer;
-        ">
+        <button onclick="toggleBoard()" class="primary">
         Sluit
         </button>
     `;
@@ -266,15 +220,17 @@ function toggleBoard() {
     board.style.display = "block";
 }
 
-/* ---------------- RESET ---------------- */
+/* ---------------- PASSWORD RESET ---------------- */
 function resetLeaderboard() {
-    let confirmReset = confirm("Weet jy seker jy wil ALLE scores delete?");
+    let pass = prompt("Tik admin wagwoord:");
 
-    if (confirmReset) {
+    if(pass === "RTT2026") {
         localStorage.removeItem("leaderboard");
         alert("Leaderboard is skoongemaak ✔");
         toggleBoard();
         toggleBoard();
+    } else {
+        alert("Wrong password ❌");
     }
 }
 
