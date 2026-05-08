@@ -14,7 +14,6 @@ body {
     text-align: center;
 }
 
-/* MOBILE FRIENDLY CARD */
 #box {
     background: rgba(255,255,255,0.08);
     width: 95%;
@@ -24,7 +23,6 @@ body {
     border-radius: 18px;
 }
 
-/* INPUT */
 input {
     padding: 14px;
     width: 90%;
@@ -35,7 +33,6 @@ input {
     margin: 10px 0;
 }
 
-/* BUTTONS (BIG FOR PHONE) */
 button {
     padding: 14px;
     width: 95%;
@@ -57,28 +54,20 @@ button {
     color: black;
 }
 
-.option:hover {
-    background: #00ffcc;
-}
-
-/* FULLSCREEN BOARD */
+/* FULLSCREEN LEADERBOARD */
 #fullscreenBoard {
     display: none;
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: black;
-    color: #00ffcc;
-    padding: 20px;
-    font-size: 24px;
-    overflow-y: auto;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:black;
+    color:#00ffcc;
+    padding:20px;
+    font-size:24px;
+    overflow-y:auto;
 }
-
-/* MOBILE TEXT SIZE */
-h1 { font-size: 24px; }
-h3 { font-size: 18px; }
 </style>
 </head>
 
@@ -111,21 +100,10 @@ h3 { font-size: 18px; }
 /* ---------------- QUESTIONS ---------------- */
 const questions = [
     { q:"1.1 Invoertoestel?", a:["Printer","Monitor","Keyboard","Speaker"], correct:2 },
-    { q:"1.2 Doel van OS?", a:["Speletjies maak","Bestuur rekenaar","Internet","Fotos"], correct:1 },
+    { q:"1.2 OS doen wat?", a:["Speletjies","Bestuur rekenaar","Fotos","Email"], correct:1 },
     { q:"1.3 Spesialis sagteware?", a:["Windows","Excel","Linux","Mac"], correct:1 },
-    { q:"1.4 RFID beteken?", a:[
-        "Radio Frequency Information Device",
-        "Radio Frequency Identification",
-        "Random Input Device",
-        "Real File ID"
-    ], correct:1 },
     { q:"2.1 Beeldlêer?", a:[".docx",".jpg",".mp3",".exe"], correct:1 },
-    { q:"2.2 Argiveer beteken?", a:[
-        "Delete",
-        "Stoor vir later",
-        "Druk uit",
-        "Email"
-    ], correct:1 }
+    { q:"2.2 Argiveer beteken?", a:["Delete","Stoor","Druk","Email"], correct:1 }
 ];
 
 let current = 0;
@@ -133,11 +111,22 @@ let score = 0;
 let player = "";
 
 let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
+let adminMode = false;
 
-/* ---------------- START ---------------- */
+/* ---------------- START GAME ---------------- */
 function startGame() {
     player = document.getElementById("name").value.trim();
-    if (!player) return alert("Tik jou naam!");
+
+    if (!player) {
+        alert("Tik jou naam!");
+        return;
+    }
+
+    /* 🔐 ADMIN MODE CHECK */
+    if (player === "admin2026") {
+        adminMode = true;
+        alert("Admin Mode Activated ✔");
+    }
 
     document.getElementById("startScreen").style.display = "none";
     showQ();
@@ -168,7 +157,7 @@ function showQ() {
     });
 }
 
-/* ---------------- END ---------------- */
+/* ---------------- END GAME ---------------- */
 function endGame() {
     saveScore(player, score);
 
@@ -184,18 +173,12 @@ function saveScore(name, score) {
     leaderboard.push({name, score});
     leaderboard.sort((a,b)=>b.score-a.score);
     leaderboard = leaderboard.slice(0,10);
-
     localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
 }
 
-/* ---------------- FULLSCREEN LEADERBOARD ---------------- */
+/* ---------------- LEADERBOARD ---------------- */
 function toggleBoard() {
     let board = document.getElementById("fullscreenBoard");
-
-    if (board.style.display === "block") {
-        board.style.display = "none";
-        return;
-    }
 
     let data = JSON.parse(localStorage.getItem("leaderboard")) || [];
 
@@ -208,25 +191,27 @@ function toggleBoard() {
 
         <br>
 
+        ${adminMode ? `
         <button onclick="resetLeaderboard()" class="primary">
         🗑 Reset Leaderboard
         </button>
+        ` : ""}
 
         <button onclick="toggleBoard()" class="primary">
         Sluit
         </button>
     `;
 
-    board.style.display = "block";
+    board.style.display = board.style.display === "block" ? "none" : "block";
 }
 
-/* ---------------- PASSWORD RESET ---------------- */
+/* ---------------- RESET (ADMIN ONLY) ---------------- */
 function resetLeaderboard() {
-    let pass = prompt("Tik admin wagwoord:");
+    let pass = prompt("Admin password:");
 
-    if(pass === "RTT2026") {
+    if (pass === "RTT2026") {
         localStorage.removeItem("leaderboard");
-        alert("Leaderboard is skoongemaak ✔");
+        alert("Leaderboard skoongemaak ✔");
         toggleBoard();
         toggleBoard();
     } else {
